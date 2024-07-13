@@ -4,6 +4,19 @@ import sys
 import time
 from pynput.keyboard import Controller, Key
 
+
+
+
+
+
+
+press_flag = [False,False,False,False,False,False,False,False,False]
+release_flag = []
+
+
+
+
+
 # default video id
 video_id = 0
 
@@ -34,6 +47,19 @@ key_mappings = {
     8: None   # start
 }
 
+
+def handling_release():
+    for i in range(1,len(release_flag)):
+        if release_flag[i] == True:
+            keyboard.release(key)
+            press_flag[i] = False
+            print("release")
+    pass
+
+
+
+
+
 while True:
     ret, frame = cap.read()
 
@@ -44,6 +70,8 @@ while True:
 
     # Detect ArUco markers in the frame
     corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=aruco_params)
+
+    release_flag = press_flag[:]
 
     # Check if marker is detected
     if ids is not None:
@@ -58,16 +86,24 @@ while True:
 
         #marker to key
         for marker_id in ids:
-            print(f"Detected marker ID: {marker_id[0]}")
+            #print(f"Detected marker ID: {marker_id[0]}")
             key = key_mappings.get(marker_id[0], None)
             if key:
-                keyboard.press(key)
-                keyboard.release(key)
-
+                if press_flag[marker_id[0]] == False:
+                    print("press")
+                    keyboard.press(key)
+                    press_flag[marker_id[0]] = True
+                release_flag[marker_id[0]] = False
+    #print(press_flag)
+    #print(release_flag)
+    #print("-------------")    
+    handling_release()
+    
     cv2.imshow('frame', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+    #time.sleep(0.5)
     
 cap.release()
 cv2.destroyAllWindows()
