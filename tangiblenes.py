@@ -4,18 +4,9 @@ import sys
 import time
 from pynput.keyboard import Controller, Key
 
-
-
-
-
-
-
-press_flag = [False,False,False,False,False,False,False,False,False]
+# flags
+press_flag = [False, False, False, False, False, False, False, False, False]
 release_flag = []
-
-
-
-
 
 # default video id
 video_id = 0
@@ -35,7 +26,7 @@ if not cap.isOpened():
 
 keyboard = Controller()
 
-#mapping ids and keys
+# mapping ids and keys
 key_mappings = {
     1: Key.up,
     2: Key.right,
@@ -47,18 +38,13 @@ key_mappings = {
     8: None   # start
 }
 
-
 def handling_release():
-    for i in range(1,len(release_flag)):
+    for i in range(1, len(release_flag)):
         if release_flag[i] == True:
             keyboard.release(key)
             press_flag[i] = False
             print("release")
     pass
-
-
-
-
 
 while True:
     ret, frame = cap.read()
@@ -66,6 +52,7 @@ while True:
     if not ret:
         print("Error: Could not read frame from video device")
         break
+
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # Detect ArUco markers in the frame
@@ -78,15 +65,15 @@ while True:
         # Draw lines along the sides of the marker
         aruco.drawDetectedMarkers(frame, corners)
 
-        #bounding boxes
+        # bounding boxes
         for corner in corners:
             corner = corner.reshape((4, 2))
             corner = corner.astype(int)
             cv2.polylines(frame, [corner], True, (0, 255, 0), 2)
 
-        #marker to key
+        # marker to key
         for marker_id in ids:
-            #print(f"Detected marker ID: {marker_id[0]}")
+            print(f"Detected marker ID: {marker_id[0]}")
             key = key_mappings.get(marker_id[0], None)
             if key:
                 if press_flag[marker_id[0]] == False:
@@ -94,16 +81,16 @@ while True:
                     keyboard.press(key)
                     press_flag[marker_id[0]] = True
                 release_flag[marker_id[0]] = False
-    #print(press_flag)
-    #print(release_flag)
-    #print("-------------")    
-    handling_release()
-    
-    cv2.imshow('frame', frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-    #time.sleep(0.5)
-    
+    handling_release()
+
+    # hiding image window for better performance
+    # cv2.imshow('frame', frame)
+    # if cv2.waitKey(1) & 0xFF == ord('q'):
+    #     break
+
+    # reduce cpu usage, timeout after every iteration
+    time.sleep(0.01)
+
 cap.release()
 cv2.destroyAllWindows()
