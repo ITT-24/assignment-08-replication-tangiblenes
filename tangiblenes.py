@@ -73,7 +73,7 @@ while True:
 
         # marker to key
         for marker_id in ids:
-            print(f"Detected marker ID: {marker_id[0]}")
+            # print(f"Detected marker ID: {marker_id[0]}")
             key = key_mappings.get(marker_id[0], None)
             if key:
                 if press_flag[marker_id[0]] == False:
