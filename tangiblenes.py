@@ -3,10 +3,14 @@ import cv2.aruco as aruco
 import sys
 import time
 from pynput.keyboard import Controller, Key
+import mapping
 
 # flags
 press_flag = [False, False, False, False, False, False, False, False, False]
-release_flag = []
+#release_flag = []
+release_countdown =[0,0,0,0,0,0,0,0,0]
+releas_buffer_frames = 5
+
 
 # default video id
 video_id = 0
@@ -27,24 +31,38 @@ if not cap.isOpened():
 keyboard = Controller()
 
 # mapping ids and keys
-key_mappings = {
-    1: Key.up,
-    2: Key.right,
-    3: Key.down,
-    4: Key.left,
-    5: None,  # A
-    6: None,  # B
-    7: None,  # select
-    8: None   # start
-}
+key_mappings = mapping.key_mappings
+#= {
+#    1: Key.up,
+#    2: Key.right,
+#    3: Key.down,
+#    4: Key.left,
+#    5: None,  # A
+#    6: None,  # B
+#    7: None,  # select
+#    8: None   # start
+#}
 
 def handling_release():
-    for i in range(1, len(release_flag)):
-        if release_flag[i] == True:
-            keyboard.release(key)
-            press_flag[i] = False
-            print("release")
+    
+    for i in range(1, len(release_countdown)):
+        #if release_flag[i] == True:
+        #    keyboard.release(key)
+        #    press_flag[i] = False
+        #    print("release")
+        if release_countdown[i] > 0:    
+            if release_countdown[i] == 1:
+                #release
+                print("release")
+                keyboard.release(key_mappings.get(i))
+                press_flag[i] = False
+                pass    
+            
+            #print(release_countdown[i])
+            release_countdown[i] -= 1
+        
     pass
+
 
 while True:
     ret, frame = cap.read()
@@ -58,7 +76,7 @@ while True:
     # Detect ArUco markers in the frame
     corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=aruco_params)
 
-    release_flag = press_flag[:]
+    #release_flag = press_flag[:]
 
     # Check if marker is detected
     if ids is not None:
@@ -76,13 +94,16 @@ while True:
             # print(f"Detected marker ID: {marker_id[0]}")
             key = key_mappings.get(marker_id[0], None)
             if key:
+                release_countdown[marker_id[0]] = releas_buffer_frames
                 if press_flag[marker_id[0]] == False:
                     print("press")
                     keyboard.press(key)
                     press_flag[marker_id[0]] = True
-                release_flag[marker_id[0]] = False
+                    
+                #release_flag[marker_id[0]] = False
 
     handling_release()
+    
 
     # hiding image window for better performance
     # cv2.imshow('frame', frame)
@@ -90,7 +111,7 @@ while True:
     #     break
 
     # reduce cpu usage, timeout after every iteration
-    time.sleep(0.01)
+    #time.sleep(0.01)
 
 cap.release()
 cv2.destroyAllWindows()
