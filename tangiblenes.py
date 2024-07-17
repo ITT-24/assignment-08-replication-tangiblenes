@@ -6,9 +6,9 @@ from pynput.keyboard import Controller, Key
 import mapping
 
 # flags
-press_flag = [False, False, False, False, False, False, False, False, False]
+press_flag = [False, False, False, False, False, False, False, False, False, False, False, False]
 #release_flag = []
-release_countdown =[0,0,0,0,0,0,0,0,0]
+release_countdown =[0,0,0,0,0,0,0,0,0,0,0,0]
 releas_buffer_frames = 5
 
 
@@ -91,7 +91,8 @@ while True:
 
         # marker to key
         for marker_id in ids:
-            # print(f"Detected marker ID: {marker_id[0]}")
+            print(f"Detected marker ID: {marker_id[0]}")
+            
             key = key_mappings.get(marker_id[0], None)
             if key:
                 release_countdown[marker_id[0]] = releas_buffer_frames
@@ -111,7 +112,7 @@ while True:
     #     break
 
     # reduce cpu usage, timeout after every iteration
-    #time.sleep(0.01)
+    time.sleep(0.01)
 
 cap.release()
 cv2.destroyAllWindows()

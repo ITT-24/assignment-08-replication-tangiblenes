@@ -9,6 +9,6 @@ key_mappings = {
     6: 'b',  # B
     7: 's',  # select
     8: 't',  # start
-    9: 'L',  #Left Shoulder
-    10:'R'   #Right Shoulder
+    9: 'l',  #Left Shoulder
+    10:'r'   #Right Shoulder
 }
