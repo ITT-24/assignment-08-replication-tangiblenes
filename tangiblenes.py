@@ -1,16 +1,14 @@
 import cv2
 import cv2.aruco as aruco
 import sys
-import time
-from pynput.keyboard import Controller, Key
+from pynput.keyboard import Controller
 import mapping
 
 # flags
-press_flag = [False, False, False, False, False, False, False, False, False, False, False, False]
+press_flag = [False, False, False, False, False, False, False, False, False]
 #release_flag = []
-release_countdown =[0,0,0,0,0,0,0,0,0,0,0,0]
-releas_buffer_frames = 5
-
+release_countdown =[0,0,0,0,0,0,0,0,0]
+release_buffer_frames = 5
 
 # default video id
 video_id = 0
@@ -32,16 +30,6 @@ keyboard = Controller()
 
 # mapping ids and keys
 key_mappings = mapping.key_mappings
-#= {
-#    1: Key.up,
-#    2: Key.right,
-#    3: Key.down,
-#    4: Key.left,
-#    5: None,  # A
-#    6: None,  # B
-#    7: None,  # select
-#    8: None   # start
-#}
 
 def handling_release():
     
@@ -83,19 +71,18 @@ while True:
         # Draw lines along the sides of the marker
         aruco.drawDetectedMarkers(frame, corners)
 
-        # bounding boxes
-        for corner in corners:
-            corner = corner.reshape((4, 2))
-            corner = corner.astype(int)
-            cv2.polylines(frame, [corner], True, (0, 255, 0), 2)
+        # bounding boxes | increase performance if commented out
+        #for corner in corners:
+        #    corner = corner.reshape((4, 2))
+        #    corner = corner.astype(int)
+        #    cv2.polylines(frame, [corner], True, (0, 255, 0), 2)
 
         # marker to key
         for marker_id in ids:
-            print(f"Detected marker ID: {marker_id[0]}")
-            
+            # print(f"Detected marker ID: {marker_id[0]}")
             key = key_mappings.get(marker_id[0], None)
             if key:
-                release_countdown[marker_id[0]] = releas_buffer_frames
+                release_countdown[marker_id[0]] = release_buffer_frames
                 if press_flag[marker_id[0]] == False:
                     print("press")
                     keyboard.press(key)
@@ -105,14 +92,13 @@ while True:
 
     handling_release()
     
-
     # hiding image window for better performance
     # cv2.imshow('frame', frame)
     # if cv2.waitKey(1) & 0xFF == ord('q'):
     #     break
 
     # reduce cpu usage, timeout after every iteration
-    time.sleep(0.01)
+    #time.sleep(0.01)
 
 cap.release()
 cv2.destroyAllWindows()

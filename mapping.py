@@ -1,4 +1,4 @@
-from pynput.keyboard import Controller, Key
+from pynput.keyboard import Key
 
 key_mappings = {
     1: Key.up,

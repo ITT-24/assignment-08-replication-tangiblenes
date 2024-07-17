@@ -20,3 +20,13 @@ One area the controller struggled with is pressing multiple buttons with one fin
 There is a certain element of strain that occurs during prolonged usage since the controller has to be held visible for the camera. However, since the hands themselves do not need to move, the arm can be rested on something, minimizing that strain.
 ## Future work:
 The buttons found in the paper lend themselves to face buttons, with shoulder triggers or analog sticks being harder or more cumbersome to implement or use. It would also be interesting to see how 3D printing would lend itself to creating these types of controls, since one field of research 3D printers are used in is pliant mechanisms, which these paper buttons also are.
+
+</br>
+
+## Program
+### Command Line Parameter
+We used a command line parameter to specify the ID of the camera to be used for marker detection. If no parameter is provided, a default value of zero is used. An error message is displayed if no video is captured.
+### Keys
+The key each marker activates is mapped in an external Python file, making it easy to change the keys we want to use.
+### Code
+The program opens the camera and captures each frame. Each frame is converted to grayscale to facilitate marker detection. The ID of the detected markers is saved, and if an ID is found, a bounding box is drawn around the corners of the marker. This step can be commented out to save CPU power and increase performance. Next, the IDs are checked, and the corresponding key is pressed for each ID. To handle long key presses, we added flags that allow for sustained key presses. Additionally, we hide the video window and its shortcut to further improve performance.
