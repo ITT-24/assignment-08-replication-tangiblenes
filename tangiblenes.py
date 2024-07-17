@@ -5,9 +5,9 @@ from pynput.keyboard import Controller
 import mapping
 
 # flags
-press_flag = [False, False, False, False, False, False, False, False, False]
+press_flag = [False, False, False, False, False, False, False, False, False, False, False, False, False]
 #release_flag = []
-release_countdown =[0,0,0,0,0,0,0,0,0]
+release_countdown =[0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 release_buffer_frames = 5
 
 # default video id
